@@ -4,7 +4,7 @@
 586,"C:\TM1\Bedrock\Data\Bedrock.Z.Cube.Placeholder.csv"
 585,"C:\TM1\Bedrock\Data\Bedrock.Z.Cube.Placeholder.csv"
 564,
-565,"ixEHiDJ;\anLjVM?utpjMBWiQjlYZP54t2`Mt49ZPYmAi7;1UWRxDSA3nN;YN0qNhBU`ZrEDB]fCPFu03Ql?u2Q^rv;[wX;9gb5H=0f]OvVC0>O9eR<B<4qpW2;y5L4]<M]US1h`>p\<IeXZJ3nh9`8T92C9<C_@8DDKB`^zpKRW7?7oU1m6B`eIOB=s\Z1UA^:9AI@D"
+565,"bZaH\<FhYEJ[q_6T71fy2]Gi3IOtjqPj56EpSVa:GZs2DzC\0oMYQ>SE2rhi=?r;CDuyxhH9ZEYzWY7AbSx\7a4qNMJJdRl<m@xD2[?yC_B@8O6EKt<u8w<;aNbfJ>Df`NDSCb3Zw?EJ3U]7[394d0`\g4Yi=??<f:Aja<cPDPKFgk@6HaTFl7>hX6zS<Zq;e0S[j@UX"
 559,1
 928,0
 593,
@@ -296,7 +296,7 @@ VarType=32ColType=827
 VarType=32ColType=827
 VarType=32ColType=827
 603,0
-572,933
+572,927
 #Region CallThisProcess
 # A snippet of code provided as an example how to call this process should the developer be working on a system without access to an editor with auto-complete.
 If( 1 = 0 );
@@ -385,30 +385,25 @@ pSourceDir    = TRIM(pSrcDir);
 pSourceFile   = TRIM(pSrcFile);
 
 ## check operating system
-If( SubSt( GetProcessErrorFileDirectory, 2, 1 ) @= ':' );
-  sOS = 'Windows';
-  sOSDelim = '\';
-ElseIf( Scan( '/', GetProcessErrorFileDirectory ) > 0 );
-  sOS = 'Linux';
+If( Scan('/', GetProcessErrorFileDirectory)>0);
+#  sOS = 'Linux';
   sOSDelim = '/';
 Else;
-  sOS = 'Windows';
+#  sOS = 'Windows';
   sOSDelim = '\';
 EndIf;
 
 # Validate source directory
 If(Trim( pSourceDir ) @= '' );
     pSourceDir = GetProcessErrorFileDirectory;
+ElseIf( FileExists( pSourceDir ) = 0 );
+  sMessage = 'Invalid source directory specified: folder does not exist.';
+  nErrors = nErrors + 1;
+  LogOutput( cMsgErrorLevel, Expand( cMsgErrorContent ) );
 EndIf;
 
 If( SubSt( pSourceDir, Long( pSourceDir ) - 1, 1 ) @= sOSDelim );
   pSourceDir = SubSt( pSourceDir, 1, Long( pSourceDir ) - 1 );
-EndIf;
-
-If( FileExists( pSourceDir ) = 0 );
-  sMessage = 'Invalid source directory specified: folder does not exist.';
-  nErrors = nErrors + 1;
-  LogOutput( cMsgErrorLevel, Expand( cMsgErrorContent ) );
 EndIf;
 
 If( pSourceFile @= '' );
@@ -716,11 +711,11 @@ WHILE (nChar <= nCharCount);
         # Add the extra characters
         sDelim = sDelim | SUBST( sElementMapping, nChar + 1, nCount);
         # Move to the end of the delimter
-
+        nAddExtra = nCount;
       EndIf;
 
       If( sDelim @= sElementStartDelim );
-        nAddExtra = nCount;
+
         sChar = sDelim;
 
         If( sLastDelim @<> '' & sLastDelim @<> sDelimDim );
@@ -806,13 +801,12 @@ WHILE (nChar <= nCharCount);
           # Add the extra characters
           sDelim = sDelim | SUBST( sElementMapping, nChar + 1, nCount);
           # Move to the end of the delimter
-          
+          nAddExtra = nCount;
         EndIf;
 
         If( sDelim @= sDelimDim );
           nIsDelimiter = 1;
           sChar = sDelim;
-          nAddExtra = nCount;
         EndIf;
 
         If ( nIsDelimiter = 1 );
@@ -1644,15 +1638,15 @@ If( nDimensionCount = 2 );
         ELSEIF( sElType @= 'AA');
             AttrPutS( v4, sDim, v2, v3 );
         ELSEIF( sElType @= 'AN');
-            AttrPutN( StringToNumber(v4), sDim, v2, v3 );
+            AttrPutN( NUMBR(v4), sDim, v2, v3 );
         ELSEIF( sElType @= 'S');
             CellPutS( v4, pCube, v2, v3 );
         ElseIF( DimIx( sDim2, v3 ) <> 0 );
             IF(pCumulate = 1);
                 nObal = CellGetN( pCube, v2, v3 );
-                nCbal = nObal + StringToNumber( v4 );
+                nCbal = nObal + Numbr( v4 );
             ELSE;
-                nCbal = StringToNumber( v4 );
+                nCbal = Numbr( v4 );
             Endif;
             CellPutN( nCbal, pCube, v2, v3 );
         EndIf;
@@ -1663,9 +1657,9 @@ ElseIf( nDimensionCount = 3 );
         If( sElType @<> 'S' );
             IF(pCumulate = 1);
                 nObal = CellGetN( pCube, v2, v3, v4 );
-                nCbal = nObal + StringToNumber( v5 );
+                nCbal = nObal + Numbr( v5 );
             ELSE;
-                nCbal = StringToNumber( v5 );
+                nCbal = Numbr( v5 );
             Endif;
             CellPutN( nCbal, pCube, v2, v3, v4 );
         Else;
@@ -1678,9 +1672,9 @@ ElseIf( nDimensionCount = 4 );
         If( sElType @<> 'S' );
             IF(pCumulate = 1);
                 nObal = CellGetN( pCube, v2, v3, v4, v5 );
-                nCbal = nObal + StringToNumber( v6 );
+                nCbal = nObal + Numbr( v6 );
             ELSE;
-                nCbal = StringToNumber( v6 );
+                nCbal = Numbr( v6 );
             Endif;
             CellPutN( nCbal, pCube, v2, v3, v4, v5 );
         Else;
@@ -1693,9 +1687,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6 );
-          nCbal = nObal + StringToNumber( v7 );
+          nCbal = nObal + Numbr( v7 );
         ELSE;
-          nCbal = StringToNumber( v7 );
+          nCbal = Numbr( v7 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6 );
       Else;
@@ -1708,9 +1702,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7 );
-          nCbal = nObal + StringToNumber( v8 );
+          nCbal = nObal + Numbr( v8 );
         ELSE;
-          nCbal = StringToNumber( v8 );
+          nCbal = Numbr( v8 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7 );
       Else;
@@ -1723,9 +1717,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8 );
-          nCbal = nObal + StringToNumber( v9 );
+          nCbal = nObal + Numbr( v9 );
         ELSE;
-          nCbal = StringToNumber( v9 );
+          nCbal = Numbr( v9 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8 );
       Else;
@@ -1738,9 +1732,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9 );
-          nCbal = nObal + StringToNumber( v10 );
+          nCbal = nObal + Numbr( v10 );
         ELSE;
-          nCbal = StringToNumber( v10 );
+          nCbal = Numbr( v10 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9 );
       Else;
@@ -1753,9 +1747,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10 );
-          nCbal = nObal + StringToNumber( v11 );
+          nCbal = nObal + Numbr( v11 );
         ELSE;
-          nCbal = StringToNumber( v11 );
+          nCbal = Numbr( v11 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10 );
       Else;
@@ -1768,9 +1762,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11 );
-          nCbal = nObal + StringToNumber( v12 );
+          nCbal = nObal + Numbr( v12 );
         ELSE;
-          nCbal = StringToNumber( v12 );
+          nCbal = Numbr( v12 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11 );
       Else;
@@ -1783,9 +1777,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12 );
-          nCbal = nObal + StringToNumber( v13 );
+          nCbal = nObal + Numbr( v13 );
         ELSE;
-          nCbal = StringToNumber( v13 );
+          nCbal = Numbr( v13 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12 );
       Else;
@@ -1798,9 +1792,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 );
-          nCbal = nObal + StringToNumber( v14 );
+          nCbal = nObal + Numbr( v14 );
         ELSE;
-          nCbal = StringToNumber( v14 );
+          nCbal = Numbr( v14 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 );
       Else;
@@ -1813,9 +1807,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14 );
-          nCbal = nObal + StringToNumber( v15 );
+          nCbal = nObal + Numbr( v15 );
         ELSE;
-          nCbal = StringToNumber( v15 );
+          nCbal = Numbr( v15 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14 );
       Else;
@@ -1828,9 +1822,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15 );
-          nCbal = nObal + StringToNumber( v16 );
+          nCbal = nObal + Numbr( v16 );
         ELSE;
-          nCbal = StringToNumber( v16 );
+          nCbal = Numbr( v16 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15 );
       Else;
@@ -1843,9 +1837,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16 );
-          nCbal = nObal + StringToNumber( v17 );
+          nCbal = nObal + Numbr( v17 );
         ELSE;
-          nCbal = StringToNumber( v17 );
+          nCbal = Numbr( v17 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16 );
       Else;
@@ -1857,9 +1851,9 @@ ElseIf( nDimensionCount = 5 );
       sElType = DType( sDim16, v17 );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 );
-          nCbal = nObal + StringToNumber( v18 );
+          nCbal = nObal + Numbr( v18 );
         ELSE;
-          nCbal = StringToNumber( v18 );
+          nCbal = Numbr( v18 );
         Endif;
       If( sElType @<> 'S' );
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 );
@@ -1873,9 +1867,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18 );
-          nCbal = nObal + StringToNumber( v19 );
+          nCbal = nObal + Numbr( v19 );
         ELSE;
-          nCbal = StringToNumber( v19 );
+          nCbal = Numbr( v19 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18 );
       Else;
@@ -1888,9 +1882,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19 );
-          nCbal = nObal + StringToNumber( v20 );
+          nCbal = nObal + Numbr( v20 );
         ELSE;
-          nCbal = StringToNumber( v20 );
+          nCbal = Numbr( v20 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19 );
       Else;
@@ -1903,9 +1897,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20 );
-          nCbal = nObal + StringToNumber( v21 );
+          nCbal = nObal + Numbr( v21 );
         ELSE;
-          nCbal = StringToNumber( v21 );
+          nCbal = Numbr( v21 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20 );
       Else;
@@ -1918,9 +1912,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21 );
-          nCbal = nObal + StringToNumber( v22 );
+          nCbal = nObal + Numbr( v22 );
         ELSE;
-          nCbal = StringToNumber( v22 );
+          nCbal = Numbr( v22 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21 );
       Else;
@@ -1933,9 +1927,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22 );
-          nCbal = nObal + StringToNumber( v23 );
+          nCbal = nObal + Numbr( v23 );
         ELSE;
-          nCbal = StringToNumber( v23 );
+          nCbal = Numbr( v23 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22 );
       Else;
@@ -1948,9 +1942,9 @@ ElseIf( nDimensionCount = 5 );
       If( sElType @<> 'S' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23 );
-          nCbal = nObal + StringToNumber( v24 );
+          nCbal = nObal + Numbr( v24 );
         ELSE;
-          nCbal = StringToNumber( v24 );
+          nCbal = Numbr( v24 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23 );
       Else;
@@ -1965,9 +1959,9 @@ ElseIf( nDimensionCount = 5 );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24 );
-          nCbal = nObal + StringToNumber( v25 );
+          nCbal = nObal + Numbr( v25 );
         ELSE;
-          nCbal = StringToNumber( v25 );
+          nCbal = Numbr( v25 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
           v23, v24 );
@@ -1983,9 +1977,9 @@ ElseIf( nDimensionCount = 5 );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25 );
-          nCbal = nObal + StringToNumber( v26 );
+          nCbal = nObal + Numbr( v26 );
         ELSE;
-          nCbal = StringToNumber( v26 );
+          nCbal = Numbr( v26 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
           v23, v24, v25 );
@@ -2002,9 +1996,9 @@ ElseIf( nDimensionCount = 5 );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26 );
-          nCbal = nObal + StringToNumber( v27 );
+          nCbal = nObal + Numbr( v27 );
         ELSE;
-          nCbal = StringToNumber( v27 );
+          nCbal = Numbr( v27 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
           v23, v24, v25, v26 );
@@ -2021,9 +2015,9 @@ ElseIf( nDimensionCount = 26 );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26, v27 );
-          nCbal = nObal + StringToNumber( v28 );
+          nCbal = nObal + Numbr( v28 );
         ELSE;
-          nCbal = StringToNumber( v28 );
+          nCbal = Numbr( v28 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
         v23, v24, v25, v26, v27 );
@@ -2040,9 +2034,9 @@ ElseIf( nDimensionCount = 27 );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26, v27, v28 );
-          nCbal = nObal + StringToNumber( v29 );
+          nCbal = nObal + Numbr( v29 );
         ELSE;
-          nCbal = StringToNumber( v29 );
+          nCbal = Numbr( v29 );
         Endif;
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
           v23, v24, v25, v26, v27, v28 );
