@@ -4,7 +4,7 @@
 586,"C:\TM1\Bedrock\Data\Bedrock.Z.Cube.Placeholder.csv"
 585,"C:\TM1\Bedrock\Data\Bedrock.Z.Cube.Placeholder.csv"
 564,
-565,"bZaH\<FhYEJ[q_6T71fy2]Gi3IOtjqPj56EpSVa:GZs2DzC\0oMYQ>SE2rhi=?r;CDuyxhH9ZEYzWY7AbSx\7a4qNMJJdRl<m@xD2[?yC_B@8O6EKt<u8w<;aNbfJ>Df`NDSCb3Zw?EJ3U]7[394d0`\g4Yi=??<f:Aja<cPDPKFgk@6HaTFl7>hX6zS<Zq;e0S[j@UX"
+565,"uIkGMv0vK53qPNT[iitveaJB_rDsJf>bnNCiHUIvIgDjcJ7B<V>NK3vc[AGe`1hW^[4TW;Tdkfh8ml=Z[8RkoLjGof;sacPB>Ntx9J@0GxS?S8UzeIkaIFvnZYZ;wRZX<][?M0RFT5P=vvy`r]T;EFQgD8BQK5kTcvIq<BlE7Fo>F:R:1`sfi[5@na^saYBrgp]0eF]s"
 559,1
 928,0
 593,
@@ -25,7 +25,7 @@
 569,2
 592,0
 599,1000
-560,20
+560,21
 pLogOutput
 pStrictErrorHandling
 pCube
@@ -38,15 +38,16 @@ pTitleRows
 pDelim
 pQuote
 pCumulate
+pStrict
 pCubeLogging
 pSandbox
+pDimDelim
 pZeroFilter
 pMappingToNewDims
-pDimDelim
 pEleStartDelim
 pEleDelim
 pCharacterSet
-561,20
+561,21
 1
 1
 2
@@ -60,14 +61,15 @@ pCharacterSet
 2
 1
 1
+1
+2
 2
 1
 2
 2
 2
 2
-2
-590,20
+590,21
 pLogOutput,0
 pStrictErrorHandling,0
 pCube,""
@@ -80,15 +82,16 @@ pTitleRows,1
 pDelim,","
 pQuote,""""
 pCumulate,0
+pStrict,1
 pCubeLogging,0
 pSandbox,""
+pDimDelim,"&"
 pZeroFilter,0
 pMappingToNewDims,""
-pDimDelim,"&"
 pEleStartDelim,"¦"
 pEleDelim,"+"
 pCharacterSet,"TM1CS_UTF8"
-637,20
+637,21
 pLogOutput,"OPTIONAL: Write parameters and action summary to server message log (Boolean True = 1)"
 pStrictErrorHandling,"OPTIONAL: On encountering any error, exit with major error status by ProcessQuit after writing to the server message log (Boolean True = 1)"
 pCube,"REQUIRED: Target Cube"
@@ -101,11 +104,12 @@ pTitleRows,"REQUIRED: Number of Title Rows to Skip"
 pDelim,"REQUIRED: AsciiOutput delimiter character (Default=comma, 2 or 3 digits = ASCII code)"
 pQuote,"REQUIRED: Quote (Accepts empty quote, 2 or 3 digits = ASCII code)"
 pCumulate,"REQUIRED: Accumulate Amounts (0 = Overwrite values, 1 = Accumulate values)"
+pStrict,"OPTIONAL:  Enforce a datapoint for all records (0 = Skip records)"
 pCubeLogging,"Required: Cube Logging (0 = No transaction logging, 1 = Logging of transactions, 2 = Ignore Cube Logging - No Action Taken)"
 pSandbox,"OPTIONAL: To use sandbox not base data enter the sandbox name (invalid name will result in process error)"
+pDimDelim,"OPTIONAL. Delimiter for start of Dimension/Element set"
 pZeroFilter,"OPTIONAL: Source file includes Zero out filter (0=No filter line in source file, 1=Ignore filter line, 2=Perform ZeroOut using filter line)"
 pMappingToNewDims,"REQUIRED IF TARGET HAS DIMS NOT IN SOURCE: DimX¦InputElementForDimX & DimY¦InputElementForDimY (specify an N level element for each new dim)"
-pDimDelim,"OPTIONAL. Delimiter for start of Dimension/Element set"
 pEleStartDelim,"OPTIONAL: Delimiter for start of element list"
 pEleDelim,"OPTIONAL: Delimiter between elements"
 pCharacterSet,"OPTIONAL: The output character set (defaults to TM1CS_UTF8 if blank)"
@@ -296,7 +300,7 @@ VarType=32ColType=827
 VarType=32ColType=827
 VarType=32ColType=827
 603,0
-572,927
+572,934
 #Region CallThisProcess
 # A snippet of code provided as an example how to call this process should the developer be working on a system without access to an editor with auto-complete.
 If( 1 = 0 );
@@ -402,9 +406,11 @@ ElseIf( FileExists( pSourceDir ) = 0 );
   LogOutput( cMsgErrorLevel, Expand( cMsgErrorContent ) );
 EndIf;
 
-If( SubSt( pSourceDir, Long( pSourceDir ) - 1, 1 ) @= sOSDelim );
+If( SubSt( pSourceDir, Long( pSourceDir ) , 1 ) @= sOSDelim );
   pSourceDir = SubSt( pSourceDir, 1, Long( pSourceDir ) - 1 );
 EndIf;
+
+
 
 If( pSourceFile @= '' );
     pSourceFile = Expand('%pCube%_Export.csv');
@@ -482,6 +488,11 @@ If( TRIM( pSandbox ) @<> '' );
 Else;
     SetUseActiveSandboxProperty( 0 );
 EndIf;
+
+## Validate Strict
+
+pStrict = IF( pStrict = 0, 0, 1) ;
+
 
 ### Check for errors before continuing
 If( nErrors <> 0 );
@@ -1210,7 +1221,7 @@ END;
 
 #CubeLogging
 If ( pCubeLogging <= 1 );
-  sCubeLogging = CellGetS('}CubeProperties', pCube, 'LOGGING' );
+  sCubeLogging = CubeGetLogChanges( pCube );
   CubeSetLogChanges( pCube, pCubeLogging);
 EndIf;
 
@@ -1229,7 +1240,7 @@ SetInputCharacterSet (pCharacterSet);
 #****Begin: Generated Statements***
 #****End: Generated Statements****
 
-574,822
+574,936
 
 #****Begin: Generated Statements***
 #****End: Generated Statements****
@@ -1620,7 +1631,121 @@ V26= sV26;
 V27= sV27;
 V28= sV28;
 V29= sV29;
- 
+
+
+If( pStrict = 1 ) ;
+  ## Do not check for the datapoint exists,
+
+ELSE;
+  ## Allow records that do not have a datapoint to be skipped.
+  if( nDimensionCount >= 2 & (Dimix( sDim1, v2 ) = 0 % DIMIX( sDim2, v3 ) = 0 ) ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 3 & Dimix( sDim3, v4 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+
+  if( nDimensionCount >= 4 & Dimix( sDim4, v5 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 5 & Dimix( sDim5, v6 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+
+  if( nDimensionCount >= 6 & Dimix( sDim6, v7 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+
+  if( nDimensionCount >= 7 & Dimix( sDim7, v8 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 8 & Dimix( sDim8, v9 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 9 & Dimix( sDim9, v10 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 10 & Dimix( sDim10, v11 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 11 & Dimix( sDim11, v12 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 12 & Dimix( sDim12, v13 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 13 & Dimix( sDim13, v14 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 14 & Dimix( sDim14, v15 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 15 & Dimix( sDim15, v16 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 16 & Dimix( sDim16, v17 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 17 & Dimix( sDim17, v18 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 18 & Dimix( sDim18, v19 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 19 & Dimix( sDim19, v20 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 20 & Dimix( sDim20, v21 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 21 & Dimix( sDim21, v22 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 22 & Dimix( sDim22, v23 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 23 & Dimix( sDim23, v24 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+
+  if( nDimensionCount >= 24 & Dimix( sDim24, v25 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 25 & Dimix( sDim25, v26 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 26 & Dimix( sDim25, v27 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+  
+  if( nDimensionCount >= 27 & Dimix( sDim27, v28 ) = 0 ) ;
+      ITEMSKIP ;
+  endif ;
+
+ENDIF ;
+
+
+
 ### Write data from source file to target cube ###
 
 If( nDimensionCount = 2 );
@@ -1633,13 +1758,13 @@ If( nDimensionCount = 2 );
         IF( SubSt( pCube, 1, 17 ) @= '}ElementSecurity_' );
             v4 = IF( v4 @= '', 'NONE', v4 );
             ElementSecurityPut( v4, sDim, v2, v3 );
-        ELSEIF( sElType @= 'AS');
+        ELSEIF( SubSt( sDim2, 1, 19 ) @= '}ElementAttributes_' & sElType @= 'AS');
             AttrPutS( v4, sDim, v2, v3, 1 );
-        ELSEIF( sElType @= 'AA');
+        ELSEIF( SubSt( sDim2, 1, 19 ) @= '}ElementAttributes_' & sElType @= 'AA');
             AttrPutS( v4, sDim, v2, v3 );
-        ELSEIF( sElType @= 'AN');
+        ELSEIF( SubSt( sDim2, 1, 19 ) @= '}ElementAttributes_' & sElType @= 'AN');
             AttrPutN( NUMBR(v4), sDim, v2, v3 );
-        ELSEIF( sElType @= 'S');
+        ELSEIF( sElType @= 'S' % sElType @= 'AA' % sElType @= 'AS');
             CellPutS( v4, pCube, v2, v3 );
         ElseIF( DimIx( sDim2, v3 ) <> 0 );
             IF(pCumulate = 1);
@@ -1654,7 +1779,7 @@ If( nDimensionCount = 2 );
 ElseIf( nDimensionCount = 3 );
     If( CellIsUpdateable( pCube, v2, v3, v4 ) = 1 );
         sElType = DType( sDim3, v4 );
-        If( sElType @<> 'S' );
+        If( sElType @= 'N' );
             IF(pCumulate = 1);
                 nObal = CellGetN( pCube, v2, v3, v4 );
                 nCbal = nObal + Numbr( v5 );
@@ -1669,7 +1794,7 @@ ElseIf( nDimensionCount = 3 );
 ElseIf( nDimensionCount = 4 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5 ) = 1 );
         sElType = DType( sDim4, v5 );
-        If( sElType @<> 'S' );
+        If( sElType @= 'N' );
             IF(pCumulate = 1);
                 nObal = CellGetN( pCube, v2, v3, v4, v5 );
                 nCbal = nObal + Numbr( v6 );
@@ -1684,7 +1809,7 @@ ElseIf( nDimensionCount = 4 );
 ElseIf( nDimensionCount = 5 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6 ) = 1 );
       sElType = DType( sDim5, v6 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6 );
           nCbal = nObal + Numbr( v7 );
@@ -1699,7 +1824,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 6 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7 ) = 1 );
       sElType = DType( sDim6, v7 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7 );
           nCbal = nObal + Numbr( v8 );
@@ -1714,7 +1839,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 7 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8 ) = 1 );
       sElType = DType( sDim7, v8 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8 );
           nCbal = nObal + Numbr( v9 );
@@ -1729,7 +1854,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 8 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9 ) = 1 );
       sElType = DType( sDim8, v9 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9 );
           nCbal = nObal + Numbr( v10 );
@@ -1744,7 +1869,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 9 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10 ) = 1 );
       sElType = DType( sDim9, v10 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10 );
           nCbal = nObal + Numbr( v11 );
@@ -1759,7 +1884,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 10 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11 ) = 1 );
       sElType = DType( sDim10, v11 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11 );
           nCbal = nObal + Numbr( v12 );
@@ -1774,7 +1899,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 11 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12 ) = 1 );
       sElType = DType( sDim11, v12 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12 );
           nCbal = nObal + Numbr( v13 );
@@ -1789,7 +1914,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 12 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 ) = 1 );
       sElType = DType( sDim12, v13 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 );
           nCbal = nObal + Numbr( v14 );
@@ -1804,7 +1929,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 13 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14 ) = 1 );
       sElType = DType( sDim13, v14 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14 );
           nCbal = nObal + Numbr( v15 );
@@ -1819,7 +1944,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 14 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15 ) = 1 );
       sElType = DType( sDim14, v15 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15 );
           nCbal = nObal + Numbr( v16 );
@@ -1834,7 +1959,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 15 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16 ) = 1 );
       sElType = DType( sDim15, v16 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16 );
           nCbal = nObal + Numbr( v17 );
@@ -1849,13 +1974,13 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 16 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 ) = 1 );
       sElType = DType( sDim16, v17 );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 );
           nCbal = nObal + Numbr( v18 );
         ELSE;
           nCbal = Numbr( v18 );
         Endif;
-      If( sElType @<> 'S' );
         CellPutN( nCbal, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 );
       Else;
         CellPutS( v18, pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17 );
@@ -1864,7 +1989,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 17 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18 ) = 1 );
       sElType = DType( sDim17, v18 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18 );
           nCbal = nObal + Numbr( v19 );
@@ -1879,7 +2004,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 18 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19 ) = 1 );
       sElType = DType( sDim18, v19 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19 );
           nCbal = nObal + Numbr( v20 );
@@ -1894,7 +2019,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 19 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20 ) = 1 );
       sElType = DType( sDim19, v20 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20 );
           nCbal = nObal + Numbr( v21 );
@@ -1909,7 +2034,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 20 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21 ) = 1 );
       sElType = DType( sDim20, v21 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21 );
           nCbal = nObal + Numbr( v22 );
@@ -1924,7 +2049,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 21 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22 ) = 1 );
       sElType = DType( sDim21, v22 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22 );
           nCbal = nObal + Numbr( v23 );
@@ -1939,7 +2064,7 @@ ElseIf( nDimensionCount = 5 );
   ElseIf( nDimensionCount = 22 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23 ) = 1 );
       sElType = DType( sDim22, v23 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23 );
           nCbal = nObal + Numbr( v24 );
@@ -1973,7 +2098,7 @@ ElseIf( nDimensionCount = 5 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
       v23, v24, v25 ) = 1 );
       sElType = DType( sDim24, v25 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25 );
@@ -1992,7 +2117,7 @@ ElseIf( nDimensionCount = 5 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
       v23, v24, v25, v26 ) = 1 );
       sElType = DType( sDim25, v26 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26 );
@@ -2011,7 +2136,7 @@ ElseIf( nDimensionCount = 26 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
     v23, v24, v25, v26, v27 ) = 1 );
       sElType = DType( sDim26, v27 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF( pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26, v27 );
@@ -2030,7 +2155,7 @@ ElseIf( nDimensionCount = 27 );
     If( CellIsUpdateable( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
     v23, v24, v25, v26, v27, v28 ) = 1 );
       sElType = DType( sDim27, v28 );
-      If( sElType @<> 'S' );
+      If( sElType @= 'N' );
         IF(pCumulate = 1);
           nObal = CellGetN( pCube, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22,
             v23, v24, v25, v26, v27, v28 );
@@ -2063,7 +2188,7 @@ nRecordPostedCount = nRecordPostedCount + 1;
 
 #Cube Logging
 If ( pCubeLogging <= 1 );
-  CubeSetLogChanges( pCube, IF(sCubeLogging@='YES',1,0) );
+  CubeSetLogChanges( pCube, sCubeLogging );
 EndIf;
     
 ### If errors occurred terminate process with a major error status ###
@@ -2079,7 +2204,7 @@ EndIf;
 
 ### Return code & final error message handling
 If( nErrors > 0 );
-    sMessage = 'the process incurred at least 1 error. Please see above lines in this file for more details.';
+    sMessage = 'The process incurred at least 1 error. Please see above lines in this file for more details.';
     nProcessReturnCode = 0;
     LogOutput( cMsgErrorLevel, Expand( cMsgErrorContent ) );
     sProcessReturnCode = Expand( '%sProcessReturnCode% Process:%cThisProcName% completed with errors. Check tm1server.log for details.' );
