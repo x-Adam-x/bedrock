@@ -4,7 +4,7 @@
 586,
 585,
 564,
-565,"j3166_Ksj6aCi0bBBA6>cBjcr=XXTeeLYfpA9N@BGT1eXWEp=bI<^8JcgGxNN?I<hkYUv21Ph8_\iCC7KQG:z3j3NR]kW@YqzB1Jrm9h3id01LrlQL\otG?@sL]3\3iU@s`j2O6H=PyJxU\drM48sLp2lJ8xX@RmYdHKiwR6Uyde7W?tafNuUJevtLtwbnH2Tv4@0k4u"
+565,"s@[z9l1@AB_\_EpyG?>aF2H3f4k>FNjj=TMvKPWyC27bV5_@QbF6roOt[KM:BdrilAk::7=gAtiEVIc0[Va\258=^X1_8Gcr`^6eJew0;@0>1RzTR7mFPMP0UeBOJlQsPGSvk]4LY]GnB0h1Euc44y\O=J=lvfSst8?Nlf;6B[aYdR6<elYAiUCh;xjx1DPWO[YmQEsb"
 559,1
 928,0
 593,
@@ -64,7 +64,7 @@ pDelim,"OPTIONAL: delimiter character for attribute list. (Defaults to & if blan
 581,0
 582,0
 603,0
-572,214
+572,213
 #Region CallThisProcess
 # A snippet of code provided as an example how to call this process should the developer be working on a system without access to an editor with auto-complete.
 If( 1 = 0 );
@@ -204,9 +204,8 @@ While( nDimDelimiterIndex <> 0 );
     
                 # Check to see if attribute already exists.
                 If( Dimix( sAttrDim , sAttr ) = 1 );
-                    nErrors = 1;
                     sMessage = 'Attribute ' | sAttr | ' already exist in dimension ' | sDim;
-                    LogOutput( cMsgErrorLevel, Expand( cMsgErrorContent ) );
+                    LogOutput( 'INFO', Expand( cMsgErrorContent ) );
                 Else;
                     AttrInsert( sDim , pPrevAttr , sAttr , pAttrType ) ;
                     If( pLogOutput = 1 );
